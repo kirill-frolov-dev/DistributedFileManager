@@ -33,4 +33,6 @@ class ShardingManager:
     def cleanup_stale(self, older_than_seconds: int) -> int:
         pass
 
+    def create_object(self, obj_id: str, initial_size: int) -> None:
+        pass
     
