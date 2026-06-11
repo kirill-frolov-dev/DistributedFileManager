@@ -34,9 +34,6 @@ class ShardingManager:
     def delete_object(self, obj_id: str) -> None:
         pass
 
-    def get_object_path(self, obj_id: str) -> Optional[str]:
-        pass
-
     def cleanup_stale(self, older_than_seconds: int) -> int:
         pass
     def expand_reserved(self, obj_id: str, extra_bytes: int) -> bool:
