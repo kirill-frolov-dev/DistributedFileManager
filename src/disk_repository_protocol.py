@@ -15,3 +15,6 @@ class DiskRepositoryProtocol(Protocol):
 
     def update_disk_status(self, disk_id: int, status: str) -> None:
         pass
+
+    def close(self):
+        pass

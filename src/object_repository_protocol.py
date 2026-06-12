@@ -15,3 +15,6 @@ class ObjectRepositoryProtocol(Protocol):
 
     def get_incomplete_objects(self, older_than_seconds: int) -> List[Dict]:
         pass
+
+    def close(self):
+        pass

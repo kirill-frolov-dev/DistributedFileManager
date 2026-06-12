@@ -53,3 +53,6 @@ class SqliteDiskRepository:
                     SET status = ?
                     WHERE id = ?''', [status, disk_id])
         self.conn.commit()
+
+    def close(self):
+        self.conn.close()

@@ -58,3 +58,6 @@ class SqliteObjectRepository:
                     FROM objects 
                     WHERE is_completed = 0 AND created_at < datetime('now', ?)''', [f"-{older_than_seconds} seconds"]).fetchall()
         return [dict(row) for row in rows]
+    
+    def close(self):
+        self.conn.close()
