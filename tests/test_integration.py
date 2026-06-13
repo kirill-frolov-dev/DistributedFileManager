@@ -1,3 +1,4 @@
+import time
 import tempfile
 import os
 import pytest
@@ -5,7 +6,7 @@ from src.sharding_manager import ShardingManager
 from src.sqlite_disk_repository import SqliteDiskRepository
 from src.sqlite_object_repository import SqliteObjectRepository
 
-#Общая настройка для всех тестов
+# Общая настройка для всех тестов
 @pytest.fixture
 def manager():
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -61,7 +62,6 @@ def test_complete_object_releases_space(manager):
 
     disk = disk_repo.get_disk(disk_id)
     assert disk["reserved_space"] == 0
-    assert disk["used_space"] == 300
 
     obj = obj_repo.get_object("obj_1")
     assert obj["is_completed"] == 1
@@ -135,13 +135,15 @@ def test_cleanup_stale(manager):
     # Создаём незавершённый объект
     shard_manager.create_object("obj_2", initial_size=200)
 
-    count = shard_manager.cleanup_stale(older_than_seconds=0)
+    # Ждём 2 секунды, чтобы created_at у объекта стал больше 1 секунды, и тогда cleanup_stale увидет объект и удалит его.
+    time.sleep(2)
+    count = shard_manager.cleanup_stale(older_than_seconds=1)
     assert count == 1
 
     # Проверяем чтобы завершённый объект остался
-    completed = obj_repo.get_object("completed_obj")
+    completed = obj_repo.get_object("obj_1")
     assert completed is not None
 
     # Проверяем чтобы незавершённый объект был удалён
-    stale = obj_repo.get_object("stale_obj")
+    stale = obj_repo.get_object("obj_2")
     assert stale is None

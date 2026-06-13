@@ -3,7 +3,7 @@ from .disk_repository_protocol import DiskRepositoryProtocol
 from .object_repository_protocol import ObjectRepositoryProtocol
 
 class ShardingManager:
-    def init(self, disk_repo: DiskRepositoryProtocol, obj_repo: ObjectRepositoryProtocol):
+    def __init__(self, disk_repo: DiskRepositoryProtocol, obj_repo: ObjectRepositoryProtocol):
         self.disk_repo = disk_repo
         self.obj_repo = obj_repo
 
