@@ -34,20 +34,20 @@ class StorageLibrary:
         #Удаляет объект и освобождает всё занятое им место.
         self.manager.delete_object(obj_id)
     
-    def get_object_path(self, obj_id: str) -> Optional[str]:
-        #Возвращает путь к объекту.
-        return self.manager.get_object_path(obj_id)
-    
     def expand_reserved(self, obj_id: str, extra_bytes: int) -> bool:
-
         #Расширяет зарезервированное место для объекта.
         return self.manager.expand_reserved(obj_id, extra_bytes)
     
     def cleanup_stale(self, older_than_seconds: int) -> int:
         #Возвращает количество удалённых объектов.
         return self.manager.cleanup_stale(older_than_seconds)
+    
     def close(self) -> None:
         #Закрывает соединения с базой данных.
         self.disk_repo.close()
         self.obj_repo.close()
         pass
+
+    def update_disk_status(self, disk_id: int, status: str) -> None:
+        #Обновляет статус диска (available, readonly, unavailable)
+        self.manager.update_disk_status(disk_id, status)

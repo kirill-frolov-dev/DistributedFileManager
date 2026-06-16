@@ -123,6 +123,37 @@ def test_delete_object(manager):
     obj = obj_repo.get_object("obj_1")
     assert obj is None
 
+# Создание дисков с особыми статусами (один доступный и один недоступный)
+def test_allocate_disk_skips_unavailable(manager):
+    disk_repo, obj_repo, shard_manager = manager
+    
+    # Регистрируем два диска
+    disk1 = shard_manager.register_disk("./disk1", total_space=1000, status="available")
+    disk2 = shard_manager.register_disk("./disk2", total_space=1000, status="unavailable")
+    
+    # Ожидаем, что выберется только disk1
+    disk_id = shard_manager.allocate_disk(500)
+    assert disk_id == disk1
+
+    # Проверяем, что disk2 не используется
+    disk2_info = disk_repo.get_disk(disk2)
+    assert disk2_info["reserved_space"] == 0
+
+# Создание двух недоступных дисков
+def test_allocate_disk_fails_when_no_disks_available(manager):
+    disk_repo, obj_repo, shard_manager = manager
+    
+    # Регистрируем только недоступные диски
+    shard_manager.register_disk("./disk1", total_space=1000, status="unavailable")
+    shard_manager.register_disk("./disk2", total_space=1000, status="readonly")
+    
+    # Ожидаем исключение
+    try:
+        shard_manager.allocate_disk(500)
+        assert False, "Должно быть исключение"
+    except RuntimeError as e:
+        assert "Нет подходящего диска" in str(e)
+
 
 # Очистка незавершённых объектов
 def test_cleanup_stale(manager):

@@ -11,16 +11,24 @@ class ShardingManager:
     def register_disk(self, mount_point: str, total_space: int, status: str = "available") -> int:
         return self.disk_repo.add_disk(mount_point, total_space, status)
 
+    def update_disk_status(self, disk_id: int, status: str) -> None:
+        self.disk_repo.update_disk_status(disk_id, status)
+
 
     def allocate_disk(self, required_bytes: int) -> int:
-        disks=self.disk_repo.get_all_disks()
+        disks = self.disk_repo.get_all_disks()
         for disk in disks:
+            if disk["status"] != "available":
+                continue
             free = disk["total_space"] - (disk["used_space"] + disk["reserved_space"])
             if free >= required_bytes:
                 return disk["id"]
-        raise RuntimeError("Не достаточно места на диске")
+        raise RuntimeError("Нет подходящего диска")
     
     def reserve_space(self, disk_id: int, bytes_to_reserve: int) -> None:
+        disk = self.disk_repo.get_disk(disk_id)
+        if disk is None or disk["status"] != "available":
+            raise RuntimeError(f"Диск {disk_id} не доступен для записи")
         self.disk_repo.update_disk_space(disk_id, used_delta=0, reserved_delta=bytes_to_reserve)
 
 
@@ -83,6 +91,10 @@ class ShardingManager:
         disk = self.disk_repo.get_disk(obj["disk_id"])
         if disk is None:
             return False
+        
+        if disk["status"] not in ("available", "readonly"):   # только для записи
+            return False
+    
         free = disk["total_space"] - (disk["used_space"] + disk["reserved_space"])
         if free < extra_bytes:
             return False
@@ -91,7 +103,9 @@ class ShardingManager:
         new_reserved = obj["reserved_size"] + extra_bytes
         self.obj_repo.update_object(obj_id, reserved_size=new_reserved)
         return True
+    
     def get_disk_info(self, disk_id: int) -> Optional[Dict]:
         return self.disk_repo.get_disk(disk_id)
+    
     def get_all_disks(self) -> List[Dict]:
         return self.disk_repo.get_all_disks()
