@@ -107,8 +107,7 @@ def test_delete_object(manager):
     disk_id = shard_manager.register_disk("./test_disk", total_space=1000)
     shard_manager.create_object("obj_1", initial_size=300)
 
-    obj_repo.update_object("obj_1", current_size=200)
-    disk_repo.update_disk_space(disk_id, used_delta=200, reserved_delta=0)
+    shard_manager.set_object_size("obj_1", actual_size=200)
 
     disk = disk_repo.get_disk(disk_id)
     assert disk["used_space"] == 200

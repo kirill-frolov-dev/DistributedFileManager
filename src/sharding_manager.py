@@ -109,3 +109,18 @@ class ShardingManager:
     
     def get_all_disks(self) -> List[Dict]:
         return self.disk_repo.get_all_disks()
+    
+    def set_object_size(self, obj_id: str, actual_size: int) -> None:
+        obj = self.obj_repo.get_object(obj_id)
+        if obj is None:
+            raise RuntimeError(f"Объект {obj_id} не найден")
+        
+        # Запоминаем старый размер
+        old_size = obj["current_size"]
+        disk_id = obj["disk_id"]
+        # Вычисляем изменение
+        delta = actual_size - old_size        
+        # Обновляем current_size у объекта
+        self.obj_repo.update_object(obj_id, current_size=actual_size)
+        # Корректируем used_space на диске
+        self.disk_repo.update_disk_space(disk_id=disk_id, used_delta=delta, reserved_delta=0)
