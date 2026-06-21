@@ -1,4 +1,3 @@
-from typing import List, Dict, Optional
 import sqlite3
 
 class SqliteObjectRepository:
@@ -26,7 +25,7 @@ class SqliteObjectRepository:
         cur.execute('''INSERT INTO objects (id, disk_id, reserved_size) VALUES (?, ?, ?)''', (obj_id, disk_id, reserved_size))
         self.conn.commit()
 
-    def get_object(self, obj_id: str) -> Optional[Dict] :
+    def get_object(self, obj_id: str) -> dict | None:
         cur = self.conn.cursor()
         cur.execute('''SELECT * 
                     FROM objects 
@@ -52,7 +51,7 @@ class SqliteObjectRepository:
         self.conn.commit()
         return cur.rowcount > 0
 
-    def get_incomplete_objects(self, older_than_seconds: int) -> List[Dict]:
+    def get_incomplete_objects(self, older_than_seconds: int) -> list[dict]:
         cur = self.conn.cursor()
         rows = cur.execute('''SELECT * 
                     FROM objects 

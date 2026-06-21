@@ -1,4 +1,3 @@
-from typing import Optional, List, Dict
 from .sqlite_disk_repository import SqliteDiskRepository
 from .sqlite_object_repository import SqliteObjectRepository
 from .sharding_manager import ShardingManager
@@ -14,11 +13,11 @@ class StorageLibrary:
         #Добавляет новый диск в систему. Возвращает ID диска.
         return self.manager.register_disk(mount_point, total_space, status)
     
-    def get_disk_info(self, disk_id: int) -> Optional[Dict]:
+    def get_disk_info(self, disk_id: int) -> dict | None:
         #Возвращает информацию о диске по ID.
         return self.manager.get_disk_info(disk_id)
     
-    def get_all_disks(self) -> List[Dict]:
+    def get_all_disks(self) -> list[dict]:
         #Возвращает список всех дисков.
         return self.manager.get_all_disks()
     

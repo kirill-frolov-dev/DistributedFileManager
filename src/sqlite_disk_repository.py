@@ -1,4 +1,3 @@
-from typing import List, Dict, Optional
 import sqlite3
 
 class SqliteDiskRepository:
@@ -25,7 +24,7 @@ class SqliteDiskRepository:
         self.conn.commit()
         return cur.lastrowid
 
-    def get_disk(self, disk_id: int) -> Optional[Dict]:
+    def get_disk(self, disk_id: int) -> dict | None:
         cur = self.conn.cursor()
         cur.execute('''SELECT * 
                     FROM disks 
@@ -33,7 +32,7 @@ class SqliteDiskRepository:
         row = cur.fetchone()
         return dict(row) if row else None
 
-    def get_all_disks(self) -> List[Dict]:
+    def get_all_disks(self) -> list[dict]:
         cur = self.conn.cursor()
         cur.execute('''SELECT * 
                     FROM disks''')

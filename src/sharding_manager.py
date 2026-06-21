@@ -1,4 +1,3 @@
-from typing import Optional, List, Dict
 from .disk_repository_protocol import DiskRepositoryProtocol
 from .object_repository_protocol import ObjectRepositoryProtocol
 from .exceptions import (DiskNotFoundError, NotEnoughSpaceError, DiskUnavailableError, ObjectNotFoundError, ObjectAlreadyExistsError)
@@ -113,10 +112,10 @@ class ShardingManager:
         self.obj_repo.update_object(obj_id, reserved_size=new_reserved)
         return True
     
-    def get_disk_info(self, disk_id: int) -> Optional[Dict]:
+    def get_disk_info(self, disk_id: int) -> dict | None:
         return self.disk_repo.get_disk(disk_id)
     
-    def get_all_disks(self) -> List[Dict]:
+    def get_all_disks(self) -> list[dict]:
         return self.disk_repo.get_all_disks()
     
     def set_object_size(self, obj_id: str, actual_size: int) -> None:
