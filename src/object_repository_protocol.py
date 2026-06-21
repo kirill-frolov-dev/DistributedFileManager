@@ -1,10 +1,11 @@
 from typing import Protocol
 
+
 class ObjectRepositoryProtocol(Protocol):
     def add_object(self, obj_id: str, disk_id: int, reserved_size: int) -> None:
         pass
 
-    def get_object(self, obj_id: str) -> dict | None :
+    def get_object(self, obj_id: str) -> dict | None:
         pass
 
     def update_object(self, obj_id: str, **kwargs) -> bool:
