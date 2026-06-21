@@ -5,6 +5,8 @@ import pytest
 from src.sharding_manager import ShardingManager
 from src.sqlite_disk_repository import SqliteDiskRepository
 from src.sqlite_object_repository import SqliteObjectRepository
+from src.exceptions import NotEnoughSpaceError, DiskUnavailableError
+
 
 # Общая настройка для всех тестов
 @pytest.fixture
@@ -147,11 +149,9 @@ def test_allocate_disk_fails_when_no_disks_available(manager):
     shard_manager.register_disk("./disk2", total_space=1000, status="readonly")
     
     # Ожидаем исключение
-    try:
+    with pytest.raises(NotEnoughSpaceError, match="Нет подходящего диска с достаточным свободным местом"):
         shard_manager.allocate_disk(500)
-        assert False, "Должно быть исключение"
-    except RuntimeError as e:
-        assert "Нет подходящего диска" in str(e)
+
 
 
 # Очистка незавершённых объектов
