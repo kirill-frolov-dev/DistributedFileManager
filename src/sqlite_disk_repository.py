@@ -19,7 +19,7 @@ class SqliteDiskRepository:
                     )""")
         self.conn.commit()
 
-    def add_disk(self, mount_point: str, total_space: int, status: str = "available") -> int:
+    def add_disk(self, mount_point: str, total_space: int, status: str = "available")  -> int:
         cur = self.conn.cursor()
         cur.execute('''INSERT INTO disks (mount_point, total_space, used_space, reserved_space, status) VALUES (?, ?, ?, ?, ?)''', (mount_point, total_space, 0, 0, status))
         self.conn.commit()
