@@ -1,11 +1,13 @@
-import time
-import tempfile
 import os
+import tempfile
+import time
+
 import pytest
+
+from src.exceptions import NotEnoughSpaceError
 from src.sharding_manager import ShardingManager
 from src.sqlite_disk_repository import SqliteDiskRepository
 from src.sqlite_object_repository import SqliteObjectRepository
-from src.exceptions import NotEnoughSpaceError, DiskUnavailableError
 
 
 # Общая настройка для всех тестов
@@ -41,7 +43,7 @@ def test_create_object_reserves_space(manager):
     disk = disk_repo.get_disk(disk_id)
     assert disk["used_space"] == 0
     assert disk["reserved_space"] == 300
-    
+
     obj = obj_repo.get_object("obj_1")
     assert obj is not None
     assert obj["current_size"] == 0
@@ -73,7 +75,7 @@ def test_complete_object_releases_space(manager):
 # Проверка возможности расширение резерва
 def test_expand_reserved(manager):
     disk_repo, obj_repo, shard_manager = manager
-    
+
     disk_id = shard_manager.register_disk("./test_disk", total_space=1000)
     shard_manager.create_object("obj_1", initial_size=300)
 
@@ -82,7 +84,7 @@ def test_expand_reserved(manager):
 
     obj = obj_repo.get_object("obj_1")
     assert obj["reserved_size"] == 500
-    
+
     disk = disk_repo.get_disk(disk_id)
     assert disk["reserved_space"] == 500
 
@@ -90,22 +92,22 @@ def test_expand_reserved(manager):
 # Отказ расширения при нехватке места
 def test_expand_reserved_fails_when_no_space(manager):
     disk_repo, obj_repo, shard_manager = manager
-    
+
     disk_id = shard_manager.register_disk("./test_disk", total_space=1000)
     shard_manager.create_object("obj_1", initial_size=900)
-    
+
     # Пытаемся расширить на 200 байт, а свободно только 100
     result = shard_manager.expand_reserved("obj_1", extra_bytes=200)
     assert result == False
-    
+
     obj = obj_repo.get_object("obj_1")
-    assert obj["reserved_size"] == 900 
+    assert obj["reserved_size"] == 900
 
 
 # Удаление объекта, освобождение всего места
 def test_delete_object(manager):
     disk_repo, obj_repo, shard_manager = manager
-    
+
     disk_id = shard_manager.register_disk("./test_disk", total_space=1000)
     shard_manager.create_object("obj_1", initial_size=300)
 
@@ -116,7 +118,7 @@ def test_delete_object(manager):
     assert disk["reserved_space"] == 300
 
     shard_manager.delete_object("obj_1")
-    
+
     disk = disk_repo.get_disk(disk_id)
     assert disk["used_space"] == 0
     assert disk["reserved_space"] == 0
@@ -127,11 +129,11 @@ def test_delete_object(manager):
 # Создание дисков с особыми статусами (один доступный и один недоступный)
 def test_allocate_disk_skips_unavailable(manager):
     disk_repo, obj_repo, shard_manager = manager
-    
+
     # Регистрируем два диска
     disk1 = shard_manager.register_disk("./disk1", total_space=1000, status="available")
     disk2 = shard_manager.register_disk("./disk2", total_space=1000, status="unavailable")
-    
+
     # Ожидаем, что выберется только disk1
     disk_id = shard_manager.allocate_disk(500)
     assert disk_id == disk1
@@ -143,11 +145,11 @@ def test_allocate_disk_skips_unavailable(manager):
 # Создание двух недоступных дисков
 def test_allocate_disk_fails_when_no_disks_available(manager):
     disk_repo, obj_repo, shard_manager = manager
-    
+
     # Регистрируем только недоступные диски
     shard_manager.register_disk("./disk1", total_space=1000, status="unavailable")
     shard_manager.register_disk("./disk2", total_space=1000, status="readonly")
-    
+
     # Ожидаем исключение
     with pytest.raises(NotEnoughSpaceError, match="Нет подходящего диска с достаточным свободным местом"):
         shard_manager.allocate_disk(500)
@@ -157,7 +159,7 @@ def test_allocate_disk_fails_when_no_disks_available(manager):
 # Очистка незавершённых объектов
 def test_cleanup_stale(manager):
     disk_repo, obj_repo, shard_manager = manager
-    
+
     disk_id = shard_manager.register_disk("./test_disk", total_space=1000)
     # Создаём объект и завершаем его
     shard_manager.create_object("obj_1", initial_size=300)

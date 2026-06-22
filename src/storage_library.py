@@ -1,6 +1,6 @@
+from .sharding_manager import ShardingManager
 from .sqlite_disk_repository import SqliteDiskRepository
 from .sqlite_object_repository import SqliteObjectRepository
-from .sharding_manager import ShardingManager
 
 
 class StorageLibrary:

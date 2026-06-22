@@ -1,12 +1,12 @@
 from .disk_repository_protocol import DiskRepositoryProtocol
-from .object_repository_protocol import ObjectRepositoryProtocol
 from .exceptions import (
     DiskNotFoundError,
-    NotEnoughSpaceError,
     DiskUnavailableError,
-    ObjectNotFoundError,
+    NotEnoughSpaceError,
     ObjectAlreadyExistsError,
+    ObjectNotFoundError,
 )
+from .object_repository_protocol import ObjectRepositoryProtocol
 
 
 class ShardingManager:
