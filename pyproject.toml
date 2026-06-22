@@ -5,7 +5,7 @@ description = "Библиотека для управления размещен
 readme = "README.md"
 authors = [
     {name = "Фролов Кирилл"},
-    {name = "Исмагзеев Темэркан"},
+    {name = "Исмагзеев Темэркан "},
 ]
 requires-python = ">=3.10"
 

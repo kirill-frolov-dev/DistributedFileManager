@@ -24,38 +24,50 @@
 ## Установка
 
 Установка зависимостей
+
 pip install -e ".[dev]"
 ## Использование
 Пример
 from src.storage_library import StorageLibrary
 
 Создаём библиотеку
+
 lib = StorageLibrary("storage.db")
 
 Регистрируем диски (папки-эмуляторы)
+
 disk1 = lib.register_disk("./storage/disk1", total_space=1000000)
+
 disk2 = lib.register_disk("./storage/disk2", total_space=2000000)
 
 Создаём объект с резервированием 300 байт
+
 obj_id = lib.create_object(initial_size=300)
 
 Клиент записывает данные на диск и сообщает размер
+
 actual_size = 200
+
 lib.set_object_size(obj_id, actual_size)
 
 Расширяем резерв (если нужно дописать больше данных)
+
 lib.expand_reserved(obj_id, extra_bytes=200)
 
 Завершаем объект (освобождаем зарезервированное место)
+
 lib.complete_object(obj_id)
 
 Удаляем объект
+
 lib.delete_object(obj_id)
 
 Очищаем незавершённые объекты старше 1 часа
+
 lib.cleanup_stale(older_than_seconds=3600)
 
 Закрываем соединение с БД
+
 lib.close()
 ## Архитектура
 Проект построен на слоях:
@@ -79,11 +91,15 @@ Ruff — форматирование и линтинг
 MyPy — статическая проверка типов
 
 pytest-cov — покрытие тестами
+
 Запуск проверок
+
 Проверка кода (линтинг)
+
 python -m ruff check src/
 
 Автоисправление ошибок
+
 python -m ruff check --fix src/
 
 Форматирование
@@ -98,10 +114,11 @@ SQLite3 (встроен в Python)
 Фролов Кирилл — студент Школы компьютерных наук ТюмГУ
 Направление: «Информационные системы и технологии»
 Практика в ООО «Недра»
+
 Исмагзеев Темэркан — студент Школы компьютерных наук ТюмГУ
 Направление: «Информационные системы и технологии»
 Практика в ООО «Недра»
 ### Клонирование репозитория
 ```bash
-git clone https://github.com/ваш-логин/DistributedFileManager.git
+git clone https://github.com/kirill-frolov-dev/DistributedFileManager.git
 cd DistributedFileManager
