@@ -1,6 +1,5 @@
 from typing import Protocol
 
-
 class ObjectRepositoryProtocol(Protocol):
     def add_object(self, obj_id: str, disk_id: int, reserved_size: int) -> None:
         pass
@@ -14,7 +13,7 @@ class ObjectRepositoryProtocol(Protocol):
     def delete_object(self, obj_id: str) -> bool:
         pass
 
-    def get_incomplete_objects(self, older_than_seconds: int) -> dict | None:
+    def get_incomplete_objects(self, older_than_seconds: int) -> list[dict]:
         pass
 
     def close(self):

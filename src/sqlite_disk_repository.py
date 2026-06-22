@@ -19,16 +19,14 @@ class SqliteDiskRepository:
                     )""")
         self.conn.commit()
 
-    def add_disk(
-        self, mount_point: str, total_space: int, status: str = "available"
-    ) -> int:
+    def add_disk(self, mount_point: str, total_space: int, status: str = "available") -> int:
         cur = self.conn.cursor()
-        cur.execute(
-            """INSERT INTO disks (mount_point, total_space, used_space, reserved_space, status) VALUES (?, ?, ?, ?, ?)""",
-            (mount_point, total_space, 0, 0, status),
-        )
+        cur.execute('''INSERT INTO disks (mount_point, total_space, used_space, reserved_space, status) VALUES (?, ?, ?, ?, ?)''', (mount_point, total_space, 0, 0, status))
         self.conn.commit()
-        return cur.lastrowid
+        lastrowid = cur.lastrowid
+        if lastrowid is None:
+            raise RuntimeError("Не удалось получить ID созданного диска")
+        return lastrowid
 
     def get_disk(self, disk_id: int) -> dict | None:
         cur = self.conn.cursor()
