@@ -51,6 +51,14 @@ def test_create_object_reserves_space(manager):
     assert obj["is_completed"] == 0
     assert obj["disk_id"] == disk_id
 
+    # ID генерируется автоматически
+    obj_id = shard_manager.create_object(initial_size=300)
+    # Проверяем, что объект создался
+    obj = obj_repo.get_object(obj_id)
+    assert obj is not None
+    assert obj["reserved_size"] == 300
+    assert obj["current_size"] == 0
+
 
 # Завершение объекта, освобождение резерва
 def test_complete_object_releases_space(manager):

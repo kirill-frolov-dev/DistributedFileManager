@@ -1,3 +1,4 @@
+import uuid
 from .disk_repository_protocol import DiskRepositoryProtocol
 from .exceptions import (
     DiskNotFoundError,
@@ -53,14 +54,18 @@ class ShardingManager:
             disk_id, used_delta=-used_bytes, reserved_delta=-reserved_bytes
         )
 
-    def create_object(self, obj_id: str, initial_size: int) -> None:
+    def create_object(self, obj_id: str | None = None, initial_size: int = 0) -> str:
+        if obj_id is None:
+            obj_id = str(uuid.uuid4())
+
         existing = self.obj_repo.get_object(obj_id)
         if existing is not None:
             raise ObjectAlreadyExistsError(f"Объект {obj_id} уже существует")
-
+        
         disk_id = self.allocate_disk(initial_size)
         self.reserve_space(disk_id, initial_size)
         self.obj_repo.add_object(obj_id, disk_id, initial_size)
+        return obj_id
 
     def complete_object(self, obj_id: str) -> None:
         obj = self.obj_repo.get_object(obj_id)
