@@ -1,0 +1,137 @@
+Metadata-Version: 2.4
+Name: distributed-file-manager
+Version: 0.1.0
+Summary: Библиотека для управления размещением больших файлов в распределённом хранилище
+Author: Фролов Кирилл, Исмагзеев Темэркан
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0.0; extra == "dev"
+Requires-Dist: ruff>=0.4.0; extra == "dev"
+Requires-Dist: mypy>=1.9.0; extra == "dev"
+
+# DistributedFileManager
+
+Библиотека для управления размещением больших файловых объектов в распределённом файловом хранилище с поддержкой шардирования, резервирования места, конкурентного доступа и очистки незавершённых объектов.
+
+---
+
+## Возможности
+
+- Регистрация и управление дисками (папками)
+- Создание объектов с предварительным резервированием места
+- Расширение зарезервированного пространства
+- Завершение объектов (освобождение резерва)
+- Удаление объектов (освобождение всего занятого места)
+- Обновление фактического размера объекта
+- Очистка незавершённых (stale) объектов по времени последнего изменения
+- Поддержка статусов дисков: `available`, `readonly`, `unavailable`
+- Автоматическая генерация уникальных ID объектов (UUID4)
+- Хранение метаданных в SQLite
+- Конкурентный доступ через блокировки
+- Кастомные исключения для типовых ошибок
+
+---
+
+## Установка
+
+Установка зависимостей
+
+pip install -e ".[dev]"
+## Использование
+Пример
+from src.storage_library import StorageLibrary
+
+Создаём библиотеку
+
+lib = StorageLibrary("storage.db")
+
+Регистрируем диски (папки-эмуляторы)
+
+disk1 = lib.register_disk("./storage/disk1", total_space=1000000)
+
+disk2 = lib.register_disk("./storage/disk2", total_space=2000000)
+
+Создаём объект с резервированием 300 байт
+
+obj_id = lib.create_object(initial_size=300)
+
+Клиент записывает данные на диск и сообщает размер
+
+actual_size = 200
+
+lib.set_object_size(obj_id, actual_size)
+
+Расширяем резерв (если нужно дописать больше данных)
+
+lib.expand_reserved(obj_id, extra_bytes=200)
+
+Завершаем объект (освобождаем зарезервированное место)
+
+lib.complete_object(obj_id)
+
+Удаляем объект
+
+lib.delete_object(obj_id)
+
+Очищаем незавершённые объекты старше 1 часа
+
+lib.cleanup_stale(older_than_seconds=3600)
+
+Закрываем соединение с БД
+
+lib.close()
+## Архитектура
+Проект построен на слоях:
+
+DiskRepositoryProtocol / ObjectRepositoryProtocol — интерфейсы для хранилищ
+
+SqliteDiskRepository / SqliteObjectRepository — реализация хранения в SQLite
+
+ShardingManager — бизнес-логика: выбор диска, резервирование, освобождение, очистка
+
+StorageLibrary — фасад для внешнего использования
+
+## Тестирование
+Для запуска всех тестов:
+pytest
+## Инструменты качества кода
+Проект использует современные инструменты для поддержания качества кода:
+
+Ruff — форматирование и линтинг
+
+MyPy — статическая проверка типов
+
+pytest-cov — покрытие тестами
+
+Запуск проверок
+
+Проверка кода (линтинг)
+
+python -m ruff check src/
+
+Автоисправление ошибок
+
+python -m ruff check --fix src/
+
+Форматирование
+python -m ruff format src/
+
+Проверка типов
+python -m mypy src/
+## Требования
+Python 3.10+
+SQLite3 (встроен в Python)
+## Авторы
+Фролов Кирилл — студент Школы компьютерных наук ТюмГУ
+Направление: «Информационные системы и технологии»
+Практика в ООО «Недра»
+
+Исмагзеев Темэркан — студент Школы компьютерных наук ТюмГУ
+Направление: «Информационные системы и технологии»
+Практика в ООО «Недра»
+### Клонирование репозитория
+```bash
+git clone https://github.com/kirill-frolov-dev/DistributedFileManager.git
+cd DistributedFileManager
