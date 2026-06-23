@@ -1,0 +1,16 @@
+README.md
+pyproject.toml
+src/__init__.py
+src/disk_repository_protocol.py
+src/exceptions.py
+src/object_repository_protocol.py
+src/sharding_manager.py
+src/sqlite_disk_repository.py
+src/sqlite_object_repository.py
+src/storage_library.py
+src/distributed_file_manager.egg-info/PKG-INFO
+src/distributed_file_manager.egg-info/SOURCES.txt
+src/distributed_file_manager.egg-info/dependency_links.txt
+src/distributed_file_manager.egg-info/requires.txt
+src/distributed_file_manager.egg-info/top_level.txt
+tests/test_integration.py
