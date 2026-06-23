@@ -24,9 +24,9 @@ class StorageLibrary:
         # Возвращает список всех дисков.
         return self.manager.get_all_disks()
 
-    def create_object(self, obj_id: str, initial_size: int) -> None:
+    def create_object(self, initial_size: int, obj_id: str | None = None) -> str:
         # Создаёт объект с резервированием места.
-        self.manager.create_object(obj_id, initial_size)
+        return self.manager.create_object(obj_id, initial_size)
 
     def complete_object(self, obj_id: str) -> None:
         # После вызова объект становится доступным для чтения.

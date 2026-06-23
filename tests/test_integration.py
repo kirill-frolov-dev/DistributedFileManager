@@ -187,3 +187,4 @@ def test_cleanup_stale(manager):
     # Проверяем чтобы незавершённый объект был удалён
     stale = obj_repo.get_object("obj_2")
     assert stale is None
+
